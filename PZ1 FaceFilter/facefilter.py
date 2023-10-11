@@ -12,13 +12,9 @@ while overlay_img is not None and cap.isOpened():
     # Считывание кадра
     ret, frame = cap.read()
 
-    # Преобразование цветового пространства кадра в RGBA для корректного отображения прозрачности
-    # img = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA)
-    img = frame
-
     # Обнаружение лиц на кадре с помощью хара-каскадов
     faceCascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
-    faces = faceCascade.detectMultiScale(img, 1.3, 5)
+    faces = faceCascade.detectMultiScale(frame, 1.3, 5)
 
     # Накладывание изображения на лицо
     for (x, y, w, h) in faces:
