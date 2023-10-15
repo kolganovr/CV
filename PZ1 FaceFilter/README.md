@@ -39,22 +39,16 @@ cap = cv2.VideoCapture(0)
 ret, frame = cap.read()
 ```
 
-6. Преобразуем цветовое пространство кадра в RGBA: 
-```python
-img = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA)
-```
-Это нужно для корректного наложения изображения с прозрачным фоном.
-
-7. Обнаруживаем лица на кадре:
+6. Обнаруживаем лица на кадре:
 ```python
 faceCascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
-faces = faceCascade.detectMultiScale(img, 1.3, 5)
+faces = faceCascade.detectMultiScale(frame, 1.3, 5)
 ```
 Используем готовый хара-каскад для распознавания лиц.
 
-8. Циклом обрабатываем каждое найденное лицо:
+7. Циклом обрабатываем каждое найденное лицо:
 
-9. Корректируем размер и положение прямоугольника лица:
+8. Корректируем размер и положение прямоугольника лица:
 ```python  
 difX = int(w/2)
 difY = int(h/2)
@@ -65,19 +59,19 @@ h = h + difY
 ```
 Это нужно для более точного наложения изображения.
 
-10. Масштабируем overlay под размер найденного лица:
+9.  Масштабируем overlay под размер найденного лица:
 ```python
 overlay_resized = cv2.resize(overlay_img, (w, h))
 ```
 
-11. Создаем маску из альфа канала: 
+10.  Создаем маску из альфа канала: 
 ```python
 overlay_mask = overlay_resized[:,:,3] 
 ```
 
-12. Проверяем, что лицо не выходит за границы кадра.
+11.  Проверяем, что лицо не выходит за границы кадра.
 
-13. Накладываем изображение на кадр:
+12.  Накладываем изображение на кадр:
 ```python
 bg_part = cv2.bitwise_and(frame[y:y+h, x:x+w], frame[y:y+h, x:x+w], mask=255-overlay_mask)
 fg_part = cv2.bitwise_and(overlay_resized[:,:,:3], overlay_resized[:,:,:3], mask=overlay_mask)
@@ -85,14 +79,14 @@ frame[y:y+h, x:x+w] = bg_part + fg_part
 ```
 Используем битовые операции AND для смешивания foreground и background частей.
 
-14. Выводим результат в отдельное окно:
+13.  Выводим результат в отдельное окно:
 ```python
 cv2.imshow('face_detect', frame)
 ```
 
-15. Выходим из цикла по нажатию ESC. 
+14.  Выходим из цикла по нажатию ESC. 
 
-16. Освобождаем ресурсы:
+15.  Освобождаем ресурсы:
 ```python
 cap.release()
 cv2.destroyAllWindows() 
