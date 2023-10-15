@@ -1,8 +1,9 @@
 import cv2
-import numpy as np
+
+IMAGE = 'PZ1 FaceFilter/kitty_face-transformed.png'
 
 # Загрузка изображения, которое будет накладываться 
-overlay_img = cv2.imread('PZ1 FaceFilter/kitty_face-transformed.png', cv2.IMREAD_UNCHANGED)
+overlay_img = cv2.imread(IMAGE, cv2.IMREAD_UNCHANGED)
 
 # Инициализация веб-камеры
 cap = cv2.VideoCapture(0)
