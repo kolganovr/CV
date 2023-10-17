@@ -21,36 +21,43 @@ def histograms(img):
     plt.plot(hist_g, color='green')
     plt.plot(hist_b, color='blue')
 
+    # Выводим изображение
     plt.subplot(142, title='Image RGB')
     plt.imshow(img)
 
     # Переводим изображение в HSV
     img_hsv = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
 
+    # Выводим изображение HSV
     plt.subplot(143, title='Image HSV')
     plt.imshow(img_hsv)
 
     # Получаем гистограмму по каждому из цветов HSV
     hist_h = np.histogram(img_hsv[..., 0], bins=256)[0]
 
+    # Выводим гистограмму HSV
     plt.subplot(144, title='HSV histogram')
     plt.plot(hist_h, color='black')
 
+    # Выводим график
     plt.show()
 
 def clip(img):
-    # Определены опытным путем
+    # Определяем границы опытным путем
     maxBorder = 255
     minBorder = 165
 
-    # Сделать все пиксели, которые не попали в диапазон, черными
+    # Делаем все пиксели, которые не попали в границы черными
     img[(img[..., 0] < minBorder) | (img[..., 0] > maxBorder)] = 0
 
+    # Выводим результат
     plt.plot(title='Result')
     plt.imshow(img)
 
+    # Выводим график
     plt.show()
 
+    # Возвращаем результат
     return img
 
 def gausian_canny(img):
@@ -60,23 +67,30 @@ def gausian_canny(img):
     # Обнаружение границ с помощью фильтра Кэнни
     img_canny = cv2.Canny(img_gaussian, 100, 200)
 
+    # Возвращаем результат
     return img_canny
 
 # Выделение границ на изображении
 def borders(img, size=301):
+    # Применяем фильтр Гаусса
     blurred = cv2.GaussianBlur(img, (size, size), 0)
 
+    # Выделяем границы
     edges_highlighted = cv2.subtract(img, blurred)
 
+    # Возвращаем результат
     return edges_highlighted
 
 def compare(img1, img2, name1='Image1', name2='Image2'):
+    # Выводим изображение 1
     plt.subplot(121, title=name1)
     plt.imshow(img1)
 
+    # Выводим изображение 2
     plt.subplot(122, title=name2)
     plt.imshow(img2)
 
+    # Выводим график
     plt.show()
 
 if __name__ == "__main__":
