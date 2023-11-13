@@ -4,6 +4,8 @@ from matplotlib import pyplot as plt
 
 DEBUG = False # True - Настройка диапазонов маски с помощью ползунков, False - Использование диапазонов маски из maskParams
 
+USE_WEB_CAM = False
+
 maskParams = {
     'H_min': 139,
     'H_max': 148,
@@ -59,18 +61,21 @@ def applyMask(img):
 
     # Выводим изображения
     cv2.imshow('mask', mask)
+
+    # Переводим в RGB
+    img_result = cv2.cvtColor(img_result, cv2.COLOR_HSV2RGB)
     cv2.imshow('img_result', img_result)
 
     # Для выхода из цикла нажать клавишу esc
     if cv2.waitKey(1) == 27:
-        return False
+        return img_result
 
 
 def getResult(img):
     # Переводим изображение в HSV
     img_hsv = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
 
-    if not DEBUG:
+    if not DEBUG: # debug false
         # Создаем маску по параметрам hsv
         mask = cv2.inRange(img_hsv, (maskParams['H_min'], maskParams['S_min'], maskParams['V_min']),
                            (maskParams['H_max'], maskParams['S_max'], maskParams['V_max']))
@@ -82,10 +87,10 @@ def getResult(img):
     # Создаем окно с ползунками для настройки параметров маски
     createTrackbars()
 
+    img_result = None
     # Применяем маску к изображению
-    while True:
-        if not applyMask(img):
-            break
+    while img_result is None:
+        img_result = applyMask(img_hsv)
 
     # Закрываем окно с ползунками
     cv2.destroyAllWindows()
@@ -107,22 +112,40 @@ def getCenter(img):
                 yCenter += j
                 count += 1
 
-    # Получаем средние координаты лазера
-    xCenter = int(xCenter / count)
-    yCenter = int(yCenter / count)
+    if count > 0:
+        # Получаем средние координаты лазера
+        xCenter = int(xCenter / count)
+        yCenter = int(yCenter / count)
+    else:
+        return [-1, -1]
 
     return [xCenter, yCenter]
 
 # Рисует маленький красный круг в центре лазера
 def showResult(img, center):
-    cv2.circle(img, (center[1], center[0]), 5, (0, 0, 255), -1)
+    if center != [-1, -1]:
+        cv2.circle(img, (center[1], center[0]), 5, (0, 0, 255), -1)
+        
     cv2.imshow('img_result', img)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
-
 if __name__ == "__main__":
-    for imNum in range(len(imgs)):
-        print(f'Image index {imNum}')
-        center = getCenter(imgs[imNum])
-        showResult(imgs[imNum], center)
+    if USE_WEB_CAM:
+        # Инициализация веб-камеры
+        cap = cv2.VideoCapture(0)
+        while True:
+            img, frame = cap.read()
+            center = getCenter(frame)
+
+            if center != [-1, -1]:
+                cv2.circle(img, (center[1], center[0]), 5, (0, 0, 255), -1)
+            cv2.imshow('img_result', img)
+
+            if cv2.waitKey(1) == 27:
+                break
+    else:
+        for imNum in range(len(imgs)):
+            print(f'Image index {imNum}')
+            center = getCenter(imgs[imNum])
+            showResult(imgs[imNum], center)
