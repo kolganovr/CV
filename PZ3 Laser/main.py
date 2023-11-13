@@ -3,7 +3,7 @@ import numpy as np
 
 DEBUG = False # True - Настройка диапазонов маски с помощью ползунков, False - Использование диапазонов маски из maskParams
 
-USE_WEB = True
+USE_WEB = True # True - Использовать фотографии из папки USE_WEB_PHOTOS, False - Использовать фотографии из папки imgs
 
 maskParams = {
     'H_min': 139,
@@ -135,7 +135,31 @@ def showResult(img, center):
     cv2.destroyAllWindows()
 
 if __name__ == "__main__":
+    centers = []
     for imNum in range(len(imgs)):
-        print(f'Image index {imNum}')
+        print(f'Image index {imNum}', end='\t')
         center = getCenter(imgs[imNum])
+        centers.append(center)
+        print(f'X: {center[1]}, Y: {center[0]}')
         showResult(imgs[imNum], center)
+    
+    # Считаем СКО
+    sum = 0
+    for i in range(len(centers)):
+        for j in range(i+1, len(centers)):
+            sum += np.sqrt((centers[i][0] - centers[j][0])**2 + (centers[i][1] - centers[j][1])**2)
+    print(f'СКО: {sum / (len(centers) * (len(centers) - 1) / 2)}')
+
+    # Считаем стандартное отклонение
+    std = np.std(centers, axis=0)
+    print(f'Стандартное отклонение: {std}')
+
+    # Радиус разброса
+    maxDist = 0
+    for i in range(len(centers)):
+        for j in range(i+1, len(centers)):
+            dist = np.sqrt((centers[i][0] - centers[j][0])**2 + (centers[i][1] - centers[j][1])**2)
+            if dist > maxDist:
+                maxDist = dist
+    
+    print(f'Радиус разброса: {maxDist/2}')
