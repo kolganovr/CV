@@ -1,10 +1,9 @@
 import cv2
 import numpy as np
-from matplotlib import pyplot as plt
 
 DEBUG = False # True - Настройка диапазонов маски с помощью ползунков, False - Использование диапазонов маски из maskParams
 
-USE_WEB_CAM = False
+USE_WEB = True
 
 maskParams = {
     'H_min': 139,
@@ -17,9 +16,14 @@ maskParams = {
 
 # Загрузка изображений
 imgs = []
-for i in range(1, 9):
-    with np.load(f'PZ3 Laser/imgs/img_{i}.npz') as data:
-        imgs.append(data['frame'])
+if USE_WEB:
+    for i in range(5):
+        with np.load(f'PZ3 Laser/USE_WEB_PHOTOS/img_{i}.npz') as data:
+            imgs.append(data['frame'])
+else:
+    for i in range(1, 9):
+        with np.load(f'PZ3 Laser/imgs/img_{i}.npz') as data:
+            imgs.append(data['frame'])
 
 def createTrackbars():
     # Создаем окно с ползунками для настройки параметров маски
@@ -131,21 +135,7 @@ def showResult(img, center):
     cv2.destroyAllWindows()
 
 if __name__ == "__main__":
-    if USE_WEB_CAM:
-        # Инициализация веб-камеры
-        cap = cv2.VideoCapture(0)
-        while True:
-            img, frame = cap.read()
-            center = getCenter(frame)
-
-            if center != [-1, -1]:
-                cv2.circle(img, (center[1], center[0]), 5, (0, 0, 255), -1)
-            cv2.imshow('img_result', img)
-
-            if cv2.waitKey(1) == 27:
-                break
-    else:
-        for imNum in range(len(imgs)):
-            print(f'Image index {imNum}')
-            center = getCenter(imgs[imNum])
-            showResult(imgs[imNum], center)
+    for imNum in range(len(imgs)):
+        print(f'Image index {imNum}')
+        center = getCenter(imgs[imNum])
+        showResult(imgs[imNum], center)
