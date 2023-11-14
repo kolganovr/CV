@@ -126,11 +126,19 @@ def getCenter(img):
     return [xCenter, yCenter]
 
 # Рисует маленький красный круг в центре лазера
-def showResult(img, center):
+def showResult(imgNum, center):
+    img = imgs[imgNum]
+
+    # Рисуем красный круг в центре лазера
     if center != [-1, -1]:
         cv2.circle(img, (center[1], center[0]), 5, (0, 0, 255), -1)
         
     cv2.imshow('img_result', img)
+
+    # Сохраняем результат как картинку jpg в папку Results
+    cv2.imwrite(f'PZ3 Laser/Results/result_{imgNum}.jpg', img)
+
+    # Ждем нажатия любой клавиши для закрытия окна
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
@@ -138,11 +146,15 @@ if __name__ == "__main__":
     centers = []
     for imNum in range(len(imgs)):
         print(f'Image index {imNum}', end='\t')
+
+        # Получаем центр лазера
         center = getCenter(imgs[imNum])
         centers.append(center)
+
+        # Выводим результат и сохраняем в файл
         print(f'X: {center[1]}, Y: {center[0]}')
-        showResult(imgs[imNum], center)
-    
+        showResult(imNum, center)
+
     # Считаем СКО
     sum = 0
     for i in range(len(centers)):
